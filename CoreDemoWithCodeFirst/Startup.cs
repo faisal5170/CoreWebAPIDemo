@@ -47,12 +47,20 @@ namespace CoreDemoWithCodeFirst
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
-
+            app.UseMvc(
+            //route =>
+            //{
+            //    route.MapRoute(
+            //        name: "EmployeeDetails",
+            //        template: "EmployeeDetails",
+            //        defaults: new { controller = "WebEmployee", action = "Index" });
+            //}
+            );
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
-            app.UseMvc();
+
         }
     }
 }
