@@ -1,9 +1,9 @@
-﻿@model List<CoreDemoWithCodeFirst.Models.MyFirstTables>
-@{ 
+﻿@model List<CoreDemoWithCodeFirst.ViewModels.EmployeeViewModel>
+@{
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 <h1>Employee Index</h1>
-
+<a class="btn btn-primary" asp-controller="WebEmployee" asp-action="AddEditEmployee">Create</a>
 <!DOCTYPE html>
 <html lang="en">
 <body>
@@ -24,7 +24,10 @@
                     <tr>
                         <td>@item.Name</td>
                         <td>@item.Age</td>
-                        <td></td>
+                        <td>
+                            <a asp-controller="WebEmployee" asp-action="AddEditEmployee" asp-route-id="@item.Id">Edit</a> |
+                            <a asp-controller="WebEmployee" asp-action="DeleteEmployee" asp-route-id="@item.Id">Delete</a> 
+                        </td>
                     </tr>
                 }
             </tbody>

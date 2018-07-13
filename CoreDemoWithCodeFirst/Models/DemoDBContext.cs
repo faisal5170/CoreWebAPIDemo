@@ -24,6 +24,7 @@ namespace CoreDemoWithCodeFirst.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
+                //getting dynamic connectionstring
                 var builder = new ConfigurationBuilder().SetBasePath
                     (Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json");
                 var configuration = builder.Build();

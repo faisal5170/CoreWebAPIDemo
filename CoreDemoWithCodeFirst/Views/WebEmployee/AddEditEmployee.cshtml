@@ -1,0 +1,51 @@
+﻿@model CoreDemoWithCodeFirst.ViewModels.EmployeeViewModel
+
+@{
+    ViewData["Title"] = "AddEditEmployee";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h2>Add - Edit Employee</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="AddEditEmployee" enctype="multipart/form-data">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <input asp-for="Id" type="hidden" value="@Model.Id" />
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Age" class="control-label"></label>
+                <input asp-for="Age" class="form-control" />
+                <span asp-validation-for="Age" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Profile" class="control-label"></label>
+                <input asp-for="Profile" type="file" class="form-control" />
+                <span asp-validation-for="Profile" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastModified" class="control-label"></label>
+                <input asp-for="LastModified" class="form-control" />
+                <span asp-validation-for="LastModified" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Country" class="control-label"></label>
+                <select asp-for="Country" asp-items="@(new SelectList(Model.CountryList,"Value","Text",Model.Country))" class="form-control"></select>
+                <span asp-validation-for="Country" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="@(Model.Id == 0 ? "Create" : "Save")" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index" asp-controller="WebEmployee">Back to List</a>
+</div>
+

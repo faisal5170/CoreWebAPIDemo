@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CoreDemoWithCodeFirst.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -33,6 +35,7 @@ namespace CoreDemoWithCodeFirst
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddDbContext<DemoDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Default")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,19 +50,23 @@ namespace CoreDemoWithCodeFirst
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
-            app.UseMvc(
-            //route =>
-            //{
-            //    route.MapRoute(
-            //        name: "EmployeeDetails",
-            //        template: "EmployeeDetails",
-            //        defaults: new { controller = "WebEmployee", action = "Index" });
-            //}
-            );
+          
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
-
+            app.UseMvc(routes =>
+            {
+                // need route and attribute on controller: [Area("Blogs")]
+                routes.MapRoute(
+                            name: "areaRoute",
+                            template: "{area:exists}/{controller=WebEmployee}/{action=Index}/{id?}"
+                    );
+                // default route for non-areas
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            });
+            app.UseMvcWithDefaultRoute();
 
         }
     }
