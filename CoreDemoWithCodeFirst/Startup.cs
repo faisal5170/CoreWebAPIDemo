@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CoreDemoWithCodeFirst.Models;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 
 namespace CoreDemoWithCodeFirst
 {
@@ -33,9 +35,15 @@ namespace CoreDemoWithCodeFirst
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            //file upload
+            services.AddSingleton<IFileProvider>(new PhysicalFileProvider(
+               Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<DemoDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Default")));
+
+            services.AddDbContext<NewDbContext>(options =>
+                    options.UseSqlServer(Configuration.GetConnectionString("Default")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,7 +58,7 @@ namespace CoreDemoWithCodeFirst
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
-          
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();

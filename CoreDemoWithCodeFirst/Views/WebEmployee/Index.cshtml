@@ -1,6 +1,6 @@
 ﻿@model List<CoreDemoWithCodeFirst.ViewModels.EmployeeViewModel>
 @{
-    Layout = "~/Pages/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <h1>Employee Index</h1>
 <a class="btn btn-primary" asp-controller="WebEmployee" asp-action="AddEditEmployee">Create</a>
@@ -15,6 +15,9 @@
                 <tr>
                     <th>Firstname</th>
                     <th>Lastname</th>
+                    <th>Country</th>
+                    <th>LastModified</th>
+                    <th>Profile Image</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -24,9 +27,12 @@
                     <tr>
                         <td>@item.Name</td>
                         <td>@item.Age</td>
+                        <td>@item.Country</td>
+                        <td>@item.LastModified</td>
+                        <td><img src="~/ProfilePicture/@item.ProfilePath" asp-append-version="true" style="height:100px;width:100px;" /></td>
                         <td>
-                            <a asp-controller="WebEmployee" asp-action="AddEditEmployee" asp-route-id="@item.Id">Edit</a> |
-                            <a asp-controller="WebEmployee" asp-action="DeleteEmployee" asp-route-id="@item.Id">Delete</a> 
+                            <a asp-controller="WebEmployee" asp-action="AddEditEmployee" asp-route-id="@item.Id" asp-append-version="true">Edit</a> |
+                            <a asp-controller="WebEmployee" asp-action="DeleteEmployee" asp-route-id="@item.Id">Delete</a>
                         </td>
                     </tr>
                 }

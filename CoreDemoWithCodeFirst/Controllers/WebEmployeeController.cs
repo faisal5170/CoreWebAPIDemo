@@ -20,7 +20,10 @@ namespace CoreDemoWithCodeFirst.Controllers
             {
                 Id = f.Id,
                 Age = f.Age,
-                Name = f.Name
+                Name = f.Name,
+                ProfilePath = f.Profile,
+                Country = f.Country,
+                LastModified = f.LastModified
             }).ToList();
             return View(list);
         }
@@ -91,13 +94,13 @@ namespace CoreDemoWithCodeFirst.Controllers
             };
             if (id.HasValue)
             {
-                var emp = await db.MyFirstTables.SingleOrDefaultAsync(a => a.Id == id);
+                var emp = await db.MyFirstTables.FindAsync(id);
                 if (emp != null)
                 {
                     model.Name = emp.Name;
                     model.Id = emp.Id;
                     model.Age = emp.Age;
-                    model.Profile = emp.Profile;
+                    model.ProfilePath = emp.Profile;
                     model.LastModified = emp.LastModified;
                     model.Country = emp.Country;
                 }
@@ -118,12 +121,17 @@ namespace CoreDemoWithCodeFirst.Controllers
                         emp = await db.MyFirstTables.SingleOrDefaultAsync(a => a.Id == model.Id);
                     emp.Name = model.Name;
                     emp.Age = model.Age;
-                    //emp.Profile = model.Profile;
-                    //using (var memoryStream = new MemoryStream())
-                    //{
-                    //    await model.Profile.CopyToAsync(memoryStream);
-                    //    user.AvatarImage = memoryStream.ToArray();
-                    //}
+                    var path = "";
+                    if (model.Profile.FileName != null)
+                    {
+                        path = Path.Combine(
+                        Directory.GetCurrentDirectory(), "wwwroot\\ProfilePicture", model.Profile.FileName);
+                        using (var stream = new FileStream(path, FileMode.Create))
+                        {
+                            await model.Profile.CopyToAsync(stream);
+                        }
+                    }
+                    emp.Profile = model.Profile.FileName != null ? path : emp.Profile;
                     emp.LastModified = model.LastModified;
                     emp.Country = model.Country;
                     if (IsNew)
@@ -133,9 +141,27 @@ namespace CoreDemoWithCodeFirst.Controllers
             }
             catch (Exception ex)
             {
-                return NotFound(ex);
+                //return NotFound(ex);
             }
             return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> Download(string filename)
+        {
+            if (filename == null)
+                return Content("filename not present");
+
+            var path = Path.Combine(
+                           Directory.GetCurrentDirectory(),
+                           "wwwroot\\ProfilePicture", filename);
+
+            var memory = new MemoryStream();
+            using (var stream = new FileStream(path, FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);
+            }
+            memory.Position = 0;
+            return File(memory, GetContentType(path), Path.GetFileName(path));
         }
 
         public async Task<IActionResult> DeleteEmployee(int id)
@@ -152,6 +178,31 @@ namespace CoreDemoWithCodeFirst.Controllers
                 return NotFound(ex);
             }
             return RedirectToAction("Index");
+        }
+
+        private string GetContentType(string path)
+        {
+            var types = GetMimeTypes();
+            var ext = Path.GetExtension(path).ToLowerInvariant();
+            return types[ext];
+        }
+
+        private Dictionary<string, string> GetMimeTypes()
+        {
+            return new Dictionary<string, string>
+            {
+                {".txt", "text/plain"},
+                {".pdf", "application/pdf"},
+                {".doc", "application/vnd.ms-word"},
+                {".docx", "application/vnd.ms-word"},
+                {".xls", "application/vnd.ms-excel"},
+                {".xlsx", "application/vnd.openxmlformatsofficedocument.spreadsheetml.sheet"},
+                {".png", "image/png"},
+                {".jpg", "image/jpeg"},
+                {".jpeg", "image/jpeg"},
+                {".gif", "image/gif"},
+                {".csv", "text/csv"}
+            };
         }
     }
 }
